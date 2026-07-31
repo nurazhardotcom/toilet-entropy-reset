@@ -1,0 +1,40 @@
+version: "0.1.0"
+zone: "bathroom_toilet_1"
+
+target_state:
+  bowl_stain_score_max: 0.10
+  seat_wetness_max: 0.05
+  rim_residue_max: 0.05
+  floor_wetness_max: 0.05
+  visible_debris_max: 0.02
+  toilet_paper_roll_min: 0.20
+  soap_level_min: 0.20
+  bin_fill_max: 0.80
+  odor_index_max: 0.25
+
+triggers:
+  - cron: "0 */4 * * *"
+  - event: "post_use"
+  - event: "odor_spike"
+
+actions:
+  - flush
+  - spray_bowl
+  - scrub_bowl
+  - wipe_seat
+  - wipe_rim
+  - spot_dry_floor
+  - replace_toilet_roll
+  - refill_soap
+  - alert_bin_full
+  - run_ventilation
+
+deviations:
+  - bowl_stained
+  - seat_wet
+  - rim_dirty
+  - floor_wet
+  - paper_low
+  - soap_low
+  - bin_full
+  - odor_high

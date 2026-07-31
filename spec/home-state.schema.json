@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HomeState",
+  "description": "Canonical low-entropy target state for a home.",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string", "default": "0.1.0" },
+    "home_id": { "type": "string" },
+    "rooms": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/room" }
+    }
+  },
+  "required": ["version", "home_id", "rooms"],
+  "definitions": {
+    "room": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "surfaces": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/surface" }
+        },
+        "canonical_locations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/canonical_location" }
+        }
+      },
+      "required": ["id", "name", "surfaces", "canonical_locations"]
+    },
+    "surface": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["floor", "countertop", "table", "sink", "toilet", "shelf", "sofa", "bed"]
+        },
+        "pristine_predicate": {
+          "type": "object",
+          "properties": {
+            "clear_of_clutter": { "type": "boolean" },
+            "wiped": { "type": "boolean" },
+            "dry": { "type": "boolean" },
+            "vacuumed": { "type": "boolean" },
+            "objects_allowed": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["id", "type", "pristine_predicate"]
+    },
+    "canonical_location": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "xdg_name": {
+          "type": "string",
+          "examples": [
+            "XDG_HOME_KEYS",
+            "XDG_HOME_SHOES",
+            "XDG_HOME_LAUNDRY_DIRTY",
+            "XDG_HOME_LAUNDRY_CLEAN",
+            "XDG_HOME_DISHES_DIRTY",
+            "XDG_HOME_DISHES_CLEAN",
+            "XDG_HOME_MAIL",
+            "XDG_HOME_TOYS"
+          ]
+        },
+        "description": { "type": "string" },
+        "room_id": { "type": "string" },
+        "object_classes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["id", "xdg_name", "description", "room_id", "object_classes"]
+    }
+  }
+}

@@ -1,0 +1,75 @@
+version: "0.1.0"
+home_id: "your-home-id"
+
+policies:
+  - id: nightly_full_reset
+    schedule: "cron: 0 23 * * *"
+    description: "Full home entropy reset before sleep"
+    rules:
+      - surface_type: floor
+        action: vacuum
+        condition: always
+      - surface_type: countertop
+        action: wipe_and_dry
+        condition: after_cooking_or_daily
+      - surface_type: table
+        action: clear_except_allowed
+        allowed_objects: ["laptop", "lamp"]
+      - canonical_location: XDG_HOME_SHOES
+        action: relocate_to_canonical
+        object_classes: ["shoes", "slippers"]
+      - canonical_location: XDG_HOME_LAUNDRY_DIRTY
+        action: relocate_to_hamper
+        object_classes: ["clothes_dirty"]
+      - canonical_location: XDG_HOME_KEYS
+        action: relocate_to_canonical
+        object_classes: ["keys", "wallet"]
+
+  - id: post_cooking_kitchen_reset
+    schedule: "event:cooking_done"
+    description: "Kitchen counter + sink reset after cooking"
+    rules:
+      - surface_type: countertop
+        room: kitchen
+        action: wipe_and_dry
+      - surface_type: sink
+        room: kitchen
+        action: clear_and_rinse
+
+  - id: guest_mode_quick_tidy
+    schedule: "manual_trigger"
+    description: "30-min guest-arrival tidy"
+    rules:
+      - surface_type: [table, countertop, sofa]
+        action: clear_and_align
+      - canonical_location: XDG_HOME_TOYS
+        action: relocate_to_bin
+        object_classes: ["toys"]
+
+  - id: toilet_entropy_reset
+    schedule: "cron: 0 */4 * * *"
+    description: "Toilet hygiene reset every 4 hours"
+    rules:
+      - zone: bathroom_toilet_1
+        action: flush_and_verify
+      - zone: bathroom_toilet_1
+        action: wipe_seat
+        condition: seat_wetness > 0.05
+      - zone: bathroom_toilet_1
+        action: scrub_bowl
+        condition: bowl_stain_score > 0.10
+      - zone: bathroom_toilet_1
+        action: spot_dry_floor
+        condition: floor_wetness > 0.05
+      - zone: bathroom_toilet_1
+        action: check_consumables
+        sub_rules:
+          - item: toilet_paper
+            action: alert_human
+            condition: roll_level < 0.20
+          - item: soap
+            action: alert_human
+            condition: soap_level < 0.20
+          - item: bin
+            action: alert_human
+            condition: fill_level > 0.80
